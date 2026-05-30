@@ -5,6 +5,7 @@ import 'package:movie_discovery/core/navigation/app_router.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
 import 'package:movie_discovery/di/injection.dart' as di;
 import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart';
+import 'package:movie_discovery/features/media_detail/presentation/cubit/media_detail_cubit.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,6 +15,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(create: (context) => di.sl<HomeCubit>()),
+        BlocProvider<MediaDetailCubit>(
+          create: (context) => di.sl<MediaDetailCubit>(),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Movie Discovery App',
