@@ -32,7 +32,7 @@ class HomeHeroBanner extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                AppTheme.backgroundDark.withOpacity(0.8),
+                AppTheme.backgroundDark.withValues(alpha: 0.8),
                 AppTheme.backgroundDark,
               ],
             ),
@@ -58,7 +58,7 @@ class HomeHeroBanner extends StatelessWidget {
                 child: Text(
                   featuredMovie.title.toUpperCase(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -66,7 +66,7 @@ class HomeHeroBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const BannerActionButtons(),
+              BannerActionButtons(movie: featuredMovie),
             ],
           ),
         ),

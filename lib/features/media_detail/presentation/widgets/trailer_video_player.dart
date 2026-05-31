@@ -30,12 +30,17 @@ class _TrailerVideoPlayerState extends State<TrailerVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayer(controller: _controller);
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: YoutubePlayer(controller: _controller),
+      ),
+    );
   }
 
   @override
   void dispose() {
-    // Kontrolleri yaddaşdan silirik
     _controller.close();
     super.dispose();
   }

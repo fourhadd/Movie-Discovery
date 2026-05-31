@@ -6,6 +6,7 @@ import 'package:movie_discovery/features/media_detail/presentation/widgets/detai
 import 'package:movie_discovery/features/media_detail/presentation/widgets/detail_header.dart';
 import 'package:movie_discovery/features/media_detail/presentation/widgets/detail_overview.dart';
 import 'package:movie_discovery/features/media_detail/presentation/widgets/detail_similar_movies.dart';
+import 'package:movie_discovery/features/media_detail/presentation/widgets/watchlist_button.dart';
 import '../cubit/media_detail_cubit.dart';
 import '../cubit/media_detail_state.dart';
 
@@ -15,9 +16,16 @@ class MovieDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<MediaDetailCubit>().fetchMediaDetail(movieId);
+    final mediaDetailCubit = context.read<MediaDetailCubit>();
+    if (mediaDetailCubit.state is! MediaDetailLoaded ||
+        (mediaDetailCubit.state is MediaDetailLoaded &&
+            (mediaDetailCubit.state as MediaDetailLoaded).movieDetail.id !=
+                movieId)) {
+      mediaDetailCubit.fetchMediaDetail(movieId);
+    }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: BlocBuilder<MediaDetailCubit, MediaDetailState>(
         builder: (context, state) {
           if (state is MediaDetailLoading) {
@@ -27,14 +35,19 @@ class MovieDetailPage extends StatelessWidget {
           }
           if (state is MediaDetailError) {
             return Center(
-              child: Text(
-                state.message,
-                style: const TextStyle(color: Colors.red),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  state.message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
               ),
             );
           }
           if (state is MediaDetailLoaded) {
             return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -45,6 +58,9 @@ class MovieDetailPage extends StatelessWidget {
                   DetailOverview(movie: state.movieDetail),
                   DetailCastList(castList: state.cast),
                   DetailSimilarMovies(movies: state.similarMovies),
+
+                  const SizedBox(height: 25),
+                  WatchlistButton(movieDetail: state.movieDetail),
                   const SizedBox(height: 40),
                 ],
               ),

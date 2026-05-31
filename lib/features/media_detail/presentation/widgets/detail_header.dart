@@ -25,10 +25,10 @@ class DetailHeader extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
-        contentPadding: EdgeInsets.zero,
-        content: TrailerVideoPlayer(videoKey: trailerKey),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: TrailerVideoPlayer(videoKey: trailerKey),
       ),
     );
   }

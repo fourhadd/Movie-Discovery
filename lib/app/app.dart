@@ -6,6 +6,8 @@ import 'package:movie_discovery/core/theme/app_theme.dart';
 import 'package:movie_discovery/di/injection.dart' as di;
 import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart';
 import 'package:movie_discovery/features/media_detail/presentation/cubit/media_detail_cubit.dart';
+import 'package:movie_discovery/features/search/presentation/cubit/search_cubit.dart';
+import 'package:movie_discovery/features/watchlist/presentation/cubit/watchlist_cubit.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,6 +19,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<HomeCubit>(create: (context) => di.sl<HomeCubit>()),
         BlocProvider<MediaDetailCubit>(
           create: (context) => di.sl<MediaDetailCubit>(),
+        ),
+        BlocProvider<SearchCubit>(create: (context) => di.sl<SearchCubit>()),
+        BlocProvider<WatchlistCubit>(
+          create: (context) => di.sl<WatchlistCubit>()..loadWatchlist(),
         ),
       ],
       child: MaterialApp.router(
