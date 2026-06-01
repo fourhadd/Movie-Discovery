@@ -1,7 +1,6 @@
 // features/actor/domain/repositories/actor_repository.dart
-import '../entities/actor_entity.dart';
+import 'package:movie_discovery/features/actor/domain/entities/actor_entity.dart';
 
 abstract class ActorRepository {
-  Future<List<ActorEntity>> getMovieCast(int movieId);
-  Future<ActorEntity> getActorDetails(int actorId);
+  Future<ActorDetail> getActorDetail(int actorId);
 }

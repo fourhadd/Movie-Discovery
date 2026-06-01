@@ -1,6 +1,11 @@
 // di/injection.dart
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:movie_discovery/features/actor/data/datasources/actor_remote_datasource.dart';
+import 'package:movie_discovery/features/actor/data/repositories/actor_remote_datasource_impl.dart';
+import 'package:movie_discovery/features/actor/domain/repositories/actor_repository.dart';
+import 'package:movie_discovery/features/actor/domain/usecases/get_actor_detail.dart';
+import 'package:movie_discovery/features/actor/presentation/cubit/actor_detail_cubit.dart';
 import 'package:movie_discovery/features/media_detail/data/datasources/media_detail_remote_data_source.dart';
 import 'package:movie_discovery/features/media_detail/data/repositories/media_detail_repository_impl.dart';
 import 'package:movie_discovery/features/media_detail/domain/repositories/media_detail_repository.dart';
@@ -101,5 +106,17 @@ Future<void> init() async {
       toggleWatchlist: sl(),
       checkWatchlistStatus: sl(),
     ),
+  );
+  // ---actor  Feature ---
+
+  sl.registerFactory(() => ActorDetailCubit(getActorDetailUsecase: sl()));
+
+  sl.registerLazySingleton(() => GetActorDetail(sl()));
+  sl.registerLazySingleton<ActorRepository>(
+    () => ActorRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<ActorRemoteDataSource>(
+    () => ActorRemoteDataSourceImpl(dio: sl<Dio>()),
   );
 }

@@ -1,7 +1,11 @@
 // core/navigation/app_router.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_discovery/core/navigation/main_wrapper.dart';
+import 'package:movie_discovery/di/injection.dart';
+import 'package:movie_discovery/features/actor/presentation/cubit/actor_detail_cubit.dart';
+import 'package:movie_discovery/features/actor/presentation/pages/actor_detail_page.dart';
 import 'package:movie_discovery/features/home/presentation/pages/home_page.dart';
 import 'package:movie_discovery/features/media_detail/presentation/pages/movie_detail_page.dart';
 import 'package:movie_discovery/features/search/presentation/pages/search_page.dart';
@@ -21,6 +25,7 @@ class ProfilePage extends StatelessWidget {
 class AppRouter {
   static const String home = '/';
   static const String movieDetails = '/movie-details/:id';
+  static const String actorDetails = '/actor-details/:id';
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -49,7 +54,6 @@ class AppRouter {
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -59,17 +63,15 @@ class AppRouter {
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/watchlist',
                 builder: (BuildContext context, GoRouterState state) =>
-                    const WatchlistPage(), // Yaratdığımız əsl UI bura bağlandı!
+                    const WatchlistPage(),
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -81,13 +83,25 @@ class AppRouter {
           ),
         ],
       ),
-
       GoRoute(
         path: movieDetails,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (BuildContext context, GoRouterState state) {
           final movieId = int.parse(state.pathParameters['id']!);
           return MovieDetailPage(movieId: movieId);
+        },
+      ),
+      GoRoute(
+        path: actorDetails,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (BuildContext context, GoRouterState state) {
+          final actorId = int.parse(state.pathParameters['id']!);
+
+          return BlocProvider<ActorDetailCubit>(
+            create: (context) =>
+                sl<ActorDetailCubit>()..fetchActorDetail(actorId),
+            child: ActorDetailPage(actorId: actorId),
+          );
         },
       ),
     ],

@@ -1,22 +1,30 @@
 // features/actor/presentation/cubit/actor_detail_cubit.dart
-// import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/usecases/get_actor_detail.dart';
+import 'actor_detail_state.dart';
 
-// import 'actor_detail_state.dart';
+class ActorDetailCubit extends Cubit<ActorDetailState> {
+  final GetActorDetail getActorDetailUsecase;
 
-// class ActorDetailCubit extends Cubit<ActorDetailState> {
-//   final GetActorlUseCase getActorDetailUseCase;
+  ActorDetailCubit({required this.getActorDetailUsecase})
+    : super(const ActorDetailInitial());
 
-//   ActorDetailCubit(this.getActorDetailUseCase) : super(ActorDetailInitial());
+  Future<void> fetchActorDetail(int actorId) async {
+    emit(const ActorDetailLoading());
 
-//   Future<void> loadActor(int actorId) async {
-//     emit(ActorDetailLoading());
+    try {
+      final actor = await getActorDetailUsecase.execute(actorId);
 
-//     try {
-//       final actor = await getActorDetailUseCase(actorId);
+      emit(ActorDetailLoaded(actor));
+    } catch (e) {
+      emit(ActorDetailError(_mapFailureToMessage(e)));
+    }
+  }
 
-//       emit(ActorDetailLoaded(actor));
-//     } catch (e) {
-//       emit(ActorDetailError(e.toString()));
-//     }
-//   }
-// }
+  String _mapFailureToMessage(dynamic error) {
+    if (error is Exception) {
+      return error.toString().replaceAll('Exception: ', '');
+    }
+    return 'Gözlənilməz xəta baş verdi. Zəhmət olmasa bir az sonra yenidən yoxlayın.';
+  }
+}

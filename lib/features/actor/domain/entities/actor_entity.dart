@@ -1,19 +1,24 @@
 // features/actor/domain/entities/actor_entity.dart
-import 'package:equatable/equatable.dart';
+import '../../../home/domain/entities/movie.dart';
 
-class ActorEntity extends Equatable {
+class ActorDetail {
   final int id;
   final String name;
-  final String? profilePath;
-  final String? character;
+  final String profilePath;
+  final String biography;
+  final String profession;
+  final int movieCount;
+  final List<Movie> knownFor;
+  final List<String> photos;
 
-  const ActorEntity({
+  const ActorDetail({
     required this.id,
     required this.name,
-    this.profilePath,
-    this.character,
+    required this.profilePath,
+    required this.biography,
+    required this.profession,
+    required this.movieCount,
+    required this.knownFor,
+    required this.photos,
   });
-
-  @override
-  List<Object?> get props => [id, name, profilePath, character];
 }

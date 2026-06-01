@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery/core/navigation/app_router.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
 import 'package:movie_discovery/di/injection.dart' as di;
+import 'package:movie_discovery/features/actor/presentation/cubit/actor_detail_cubit.dart';
 import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart';
 import 'package:movie_discovery/features/media_detail/presentation/cubit/media_detail_cubit.dart';
 import 'package:movie_discovery/features/search/presentation/cubit/search_cubit.dart';
@@ -23,6 +24,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<SearchCubit>(create: (context) => di.sl<SearchCubit>()),
         BlocProvider<WatchlistCubit>(
           create: (context) => di.sl<WatchlistCubit>()..loadWatchlist(),
+        ),
+        BlocProvider<ActorDetailCubit>(
+          create: (context) => di.sl<ActorDetailCubit>(),
         ),
       ],
       child: MaterialApp.router(
