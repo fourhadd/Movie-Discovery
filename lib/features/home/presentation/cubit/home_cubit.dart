@@ -25,4 +25,11 @@ class HomeCubit extends Cubit<HomeState> {
       emit(HomeError(e.toString()));
     }
   }
+
+  void markImagesAsLoaded() {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      emit(currentState.copyWith(isImagesLoaded: true));
+    }
+  }
 }

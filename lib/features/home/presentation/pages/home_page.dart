@@ -6,6 +6,7 @@ import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart
 import 'package:movie_discovery/features/home/presentation/cubit/home_state.dart';
 import 'package:movie_discovery/features/home/presentation/widgets/home_hero_banner.dart';
 import 'package:movie_discovery/features/home/presentation/widgets/home_movie_section.dart';
+import 'package:movie_discovery/features/home/presentation/widgets/home_shimmer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,9 +23,7 @@ class HomePage extends StatelessWidget {
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryRed),
-            );
+            return const HomeShimmer();
           }
 
           if (state is HomeLoaded) {

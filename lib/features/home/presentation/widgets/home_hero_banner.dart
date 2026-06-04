@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_discovery/core/constants/app_constants.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
+import 'package:movie_discovery/core/widgets/app_shimmer.dart';
 import 'package:movie_discovery/features/home/domain/entities/movie.dart';
 import 'package:movie_discovery/features/home/presentation/widgets/banner_action_buttons.dart';
 
@@ -13,15 +14,37 @@ class HomeHeroBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           height: 550,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                '${AppConstants.originalImageBaseUrl}${featuredMovie.backdropPath}',
-              ),
-              fit: BoxFit.cover,
-            ),
+          width: double.infinity,
+          child: Image.network(
+            '${AppConstants.originalImageBaseUrl}${featuredMovie.backdropPath}',
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+
+              return const AppShimmer(
+                height: 550,
+                width: double.infinity,
+                borderRadius: 0,
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 550,
+                width: double.infinity,
+                color: Colors.grey[900],
+                child: const Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Colors.white54,
+                    size: 50,
+                  ),
+                ),
+              );
+            },
           ),
         ),
         Container(

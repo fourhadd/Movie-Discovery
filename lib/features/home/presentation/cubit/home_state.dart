@@ -16,11 +16,28 @@ class HomeLoading extends HomeState {}
 class HomeLoaded extends HomeState {
   final List<Movie> trendingMovies;
   final List<Movie> popularMovies;
+  final bool isImagesLoaded;
 
-  const HomeLoaded({required this.trendingMovies, required this.popularMovies});
+  const HomeLoaded({
+    required this.trendingMovies,
+    required this.popularMovies,
+    this.isImagesLoaded = false,
+  });
+
+  HomeLoaded copyWith({
+    List<Movie>? trendingMovies,
+    List<Movie>? popularMovies,
+    bool? isImagesLoaded,
+  }) {
+    return HomeLoaded(
+      trendingMovies: trendingMovies ?? this.trendingMovies,
+      popularMovies: popularMovies ?? this.popularMovies,
+      isImagesLoaded: isImagesLoaded ?? this.isImagesLoaded,
+    );
+  }
 
   @override
-  List<Object> get props => [trendingMovies, popularMovies];
+  List<Object> get props => [trendingMovies, popularMovies, isImagesLoaded];
 }
 
 class HomeError extends HomeState {
