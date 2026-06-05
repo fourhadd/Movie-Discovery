@@ -13,7 +13,9 @@ abstract class MediaDetailState extends Equatable {
 
 class MediaDetailInitial extends MediaDetailState {}
 
-class MediaDetailLoading extends MediaDetailState {}
+class MediaDetailLoading extends MediaDetailState {
+  
+}
 
 class MediaDetailLoaded extends MediaDetailState {
   final MovieDetail movieDetail;

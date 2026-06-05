@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_discovery/core/constants/app_constants.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
+import 'package:movie_discovery/core/widgets/app_shimmer.dart';
 import 'package:movie_discovery/features/media_detail/domain/entities/cast.dart';
 
 class DetailCastList extends StatelessWidget {
@@ -40,17 +41,42 @@ class DetailCastList extends StatelessWidget {
                   width: 80,
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 35,
-                        backgroundColor: AppTheme.cardDark,
-                        backgroundImage: actor.profilePath.isNotEmpty
-                            ? NetworkImage(
+                      ClipOval(
+                        child: actor.profilePath.isNotEmpty
+                            ? Image.network(
                                 '${AppConstants.imageBaseUrl}${actor.profilePath}',
+                                width: 70,
+                                height: 70,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const AppShimmer(
+                                        width: 70,
+                                        height: 70,
+                                        shape: BoxShape.circle,
+                                      );
+                                    },
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      width: 70,
+                                      height: 70,
+                                      color: AppTheme.cardDark,
+                                      child: const Icon(
+                                        Icons.person,
+                                        color: Colors.white54,
+                                      ),
+                                    ),
                               )
-                            : null,
-                        child: actor.profilePath.isEmpty
-                            ? const Icon(Icons.person, color: Colors.white54)
-                            : null,
+                            : Container(
+                                width: 70,
+                                height: 70,
+                                color: AppTheme.cardDark,
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Colors.white54,
+                                ),
+                              ),
                       ),
                       const SizedBox(height: 6),
                       Text(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_discovery/core/constants/app_constants.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
+import 'package:movie_discovery/core/widgets/app_shimmer.dart';
 import 'package:movie_discovery/features/media_detail/domain/entities/movie_detail.dart';
 import 'package:movie_discovery/features/media_detail/presentation/widgets/trailer_video_player.dart';
 
@@ -37,14 +38,28 @@ class DetailHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           height: 400,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                '${AppConstants.originalImageBaseUrl}${movie.backdropPath}',
+          width: double.infinity,
+          child: Image.network(
+            '${AppConstants.originalImageBaseUrl}${movie.backdropPath}',
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const AppShimmer(
+                width: double.infinity,
+                height: 400,
+                borderRadius: 0,
+              );
+            },
+            errorBuilder: (context, error, stackTrace) => Container(
+              height: 400,
+              color: AppTheme.cardDark,
+              child: const Icon(
+                Icons.broken_image,
+                size: 50,
+                color: Colors.white54,
               ),
-              fit: BoxFit.cover,
             ),
           ),
         ),

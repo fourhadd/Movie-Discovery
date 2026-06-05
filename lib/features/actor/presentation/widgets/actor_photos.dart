@@ -15,7 +15,7 @@ class ActorPhotos extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.only(left: 20.0),
           child: Text(
             "Photos",
             style: TextStyle(

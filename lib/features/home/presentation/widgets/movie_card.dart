@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_discovery/core/constants/app_constants.dart';
 import 'package:movie_discovery/features/home/domain/entities/movie.dart';
+import 'package:movie_discovery/core/widgets/app_shimmer.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -18,13 +19,37 @@ class MovieCard extends StatelessWidget {
       child: Container(
         width: 130,
         margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          image: DecorationImage(
-            image: NetworkImage(
-              '${AppConstants.imageBaseUrl}${movie.posterPath}',
-            ),
+          child: Image.network(
+            '${AppConstants.imageBaseUrl}${movie.posterPath}',
             fit: BoxFit.cover,
+            loadingBuilder:
+                (
+                  BuildContext context,
+                  Widget child,
+                  ImageChunkEvent? loadingProgress,
+                ) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+
+                  return const AppShimmer(
+                    width: 130,
+                    height: double.infinity,
+                    borderRadius: 12,
+                  );
+                },
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: Colors.grey[800],
+                child: const Icon(
+                  Icons.broken_image,
+                  color: Colors.white54,
+                  size: 40,
+                ),
+              );
+            },
           ),
         ),
       ),
