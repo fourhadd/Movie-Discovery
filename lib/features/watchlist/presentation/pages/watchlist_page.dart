@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_discovery/features/watchlist/presentation/widgets/watchlist_grid_shimmer.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../cubit/watchlist_cubit.dart';
@@ -32,9 +33,7 @@ class WatchlistPage extends StatelessWidget {
       body: BlocBuilder<WatchlistCubit, WatchlistState>(
         builder: (context, state) {
           if (state is WatchlistLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryRed),
-            );
+            return const WatchlistGridShimmer();
           }
           if (state is WatchlistLoaded) {
             if (state.movies.isEmpty) {

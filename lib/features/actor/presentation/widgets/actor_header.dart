@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_discovery/features/actor/domain/entities/actor_entity.dart';
 import 'package:movie_discovery/features/actor/presentation/widgets/follow_button.dart';
+import 'package:movie_discovery/features/profile/domain/entities/followed_actor.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_shimmer.dart';
@@ -47,10 +48,7 @@ class ActorHeader extends StatelessWidget {
                     letterSpacing: 1.2,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.share_outlined, color: Colors.white),
-                  onPressed: () {},
-                ),
+                const SizedBox(width: 40),
               ],
             ),
           ),
@@ -115,7 +113,14 @@ class ActorHeader extends StatelessWidget {
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
               const SizedBox(height: 15),
-              const FollowButton(),
+              FollowButton(
+                actor: FollowedActor(
+                  id: actor.id,
+                  name: actor.name,
+                  profilePath:
+                      '${AppConstants.originalImageBaseUrl}${actor.profilePath}',
+                ),
+              ),
             ],
           ),
         ),

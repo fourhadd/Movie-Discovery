@@ -10,17 +10,7 @@ import 'package:movie_discovery/features/home/presentation/pages/home_page.dart'
 import 'package:movie_discovery/features/media_detail/presentation/pages/movie_detail_page.dart';
 import 'package:movie_discovery/features/search/presentation/pages/search_page.dart';
 import 'package:movie_discovery/features/watchlist/presentation/pages/watchlist_page.dart';
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: Colors.black,
-    body: Center(
-      child: Text('Profile Page', style: TextStyle(color: Colors.white)),
-    ),
-  );
-}
+import 'package:movie_discovery/features/profile/presentation/pages/profile_page.dart';
 
 class AppRouter {
   static const String home = '/';

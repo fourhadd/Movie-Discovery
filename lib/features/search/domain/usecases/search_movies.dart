@@ -1,15 +1,13 @@
 // features/search/domain/usecases/search_movies.dart
-import 'package:movie_discovery/core/usecases/usecase.dart';
-import 'package:movie_discovery/features/home/domain/entities/movie.dart';
-import 'package:movie_discovery/features/search/domain/repositories/search_repository.dart';
+import '../repositories/search_repository.dart';
+import '../../data/models/search_result_model.dart';
 
-class SearchMovies implements UseCase<List<Movie>, String> {
+class SearchMovies {
   final SearchRepository repository;
 
   SearchMovies(this.repository);
 
-  @override
-  Future<List<Movie>> call(String query) async {
-    return await repository.searchMovies(query);
+  Future<List<SearchResultModel>> call(String query) async {
+    return await repository.searchMulti(query);
   }
 }

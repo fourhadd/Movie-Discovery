@@ -1,8 +1,8 @@
 // features/search/data/repositories/search_repository_impl.dart
 import 'package:movie_discovery/core/errors/failures.dart';
-import 'package:movie_discovery/features/home/domain/entities/movie.dart';
-import 'package:movie_discovery/features/search/data/datasources/search_remote_data_source.dart';
-import 'package:movie_discovery/features/search/domain/repositories/search_repository.dart';
+import '../datasources/search_remote_data_source.dart';
+import '../../domain/repositories/search_repository.dart';
+import '../models/search_result_model.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
   final SearchRemoteDataSource remoteDataSource;
@@ -10,12 +10,20 @@ class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Movie>> searchMovies(String query) async {
+  Future<List<SearchResultModel>> searchMulti(String query) async {
     try {
-      final movieModels = await remoteDataSource.searchMovies(query);
-      return movieModels;
+      return await remoteDataSource.searchMulti(query);
     } catch (e) {
       throw ServerFailure('Axtarış uğursuz oldu: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getGenres() async {
+    try {
+      return await remoteDataSource.getGenres();
+    } catch (e) {
+      throw ServerFailure('Janrlar gətirilmədi');
     }
   }
 }

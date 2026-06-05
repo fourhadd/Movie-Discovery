@@ -14,9 +14,18 @@ import 'package:movie_discovery/features/media_detail/domain/usecases/get_movie_
 import 'package:movie_discovery/features/media_detail/domain/usecases/get_movie_trailer.dart';
 import 'package:movie_discovery/features/media_detail/domain/usecases/get_similar_movies.dart';
 import 'package:movie_discovery/features/media_detail/presentation/cubit/media_detail_cubit.dart';
+import 'package:movie_discovery/features/profile/data/datasources/profile_local_data_source.dart';
+import 'package:movie_discovery/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:movie_discovery/features/profile/domain/repositories/profile_repository.dart';
+import 'package:movie_discovery/features/profile/domain/usecases/get_user_profile.dart';
+import 'package:movie_discovery/features/profile/domain/usecases/is_actor_followed.dart';
+import 'package:movie_discovery/features/profile/domain/usecases/toggle_follow_actor.dart';
+import 'package:movie_discovery/features/profile/presentation/cubit/follow_cubit.dart';
+import 'package:movie_discovery/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:movie_discovery/features/search/data/datasources/search_remote_data_source.dart';
 import 'package:movie_discovery/features/search/data/repositories/search_repository_impl.dart';
 import 'package:movie_discovery/features/search/domain/repositories/search_repository.dart';
+import 'package:movie_discovery/features/search/domain/usecases/get_genres.dart';
 import 'package:movie_discovery/features/search/domain/usecases/search_movies.dart';
 import 'package:movie_discovery/features/search/presentation/cubit/search_cubit.dart';
 import 'package:movie_discovery/features/watchlist/data/datasources/watchlist_local_data_source.dart';
@@ -39,18 +48,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Dio());
 
   // --- Home Feature ---
-
   sl.registerLazySingleton<HomeRemoteDataSource>(
     () => HomeRemoteDataSourceImpl(dio: sl()),
   );
-
   sl.registerLazySingleton<MovieRepository>(
     () => MovieRepositoryImpl(remoteDataSource: sl()),
   );
-
   sl.registerLazySingleton(() => GetTrendingMovies(sl()));
   sl.registerLazySingleton(() => GetPopularMovies(sl()));
-
   sl.registerFactory(
     () => HomeCubit(getTrendingMovies: sl(), getPopularMovies: sl()),
   );
@@ -59,16 +64,13 @@ Future<void> init() async {
   sl.registerLazySingleton<MediaDetailRemoteDataSource>(
     () => MediaDetailRemoteDataSourceImpl(dio: sl()),
   );
-
   sl.registerLazySingleton<MediaDetailRepository>(
     () => MediaDetailRepositoryImpl(remoteDataSource: sl()),
   );
-
   sl.registerLazySingleton(() => GetMovieDetails(sl()));
   sl.registerLazySingleton(() => GetMovieCast(sl()));
   sl.registerLazySingleton(() => GetSimilarMovies(sl()));
   sl.registerLazySingleton(() => GetMovieTrailer(sl()));
-
   sl.registerFactory(
     () => MediaDetailCubit(
       getMovieDetails: sl(),
@@ -78,8 +80,7 @@ Future<void> init() async {
     ),
   );
 
-  // ---Search Feature ---
-
+  // --- Search Feature ---
   sl.registerLazySingleton<SearchRemoteDataSource>(
     () => SearchRemoteDataSourceImpl(dio: sl()),
   );
@@ -87,10 +88,15 @@ Future<void> init() async {
     () => SearchRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton(() => SearchMovies(sl()));
-  sl.registerFactory(() => SearchCubit(searchMoviesUseCase: sl()));
+  sl.registerLazySingleton(
+    () => GetGenres(sl()),
+  ); // GetGenres öz aid olduğu blokda yerləşdirildi
 
-  // ---Watchlist Feature ---
+  sl.registerFactory(
+    () => SearchCubit(searchMoviesUseCase: sl(), getGenresUseCase: sl()),
+  );
 
+  // --- Watchlist Feature ---
   sl.registerLazySingleton<WatchlistLocalDataSource>(
     () => WatchlistLocalDataSourceImpl(),
   );
@@ -107,16 +113,29 @@ Future<void> init() async {
       checkWatchlistStatus: sl(),
     ),
   );
-  // ---actor  Feature ---
 
-  sl.registerFactory(() => ActorDetailCubit(getActorDetailUsecase: sl()));
-
-  sl.registerLazySingleton(() => GetActorDetail(sl()));
+  // --- Actor Feature ---
+  sl.registerLazySingleton<ActorRemoteDataSource>(
+    () => ActorRemoteDataSourceImpl(dio: sl<Dio>()),
+  );
   sl.registerLazySingleton<ActorRepository>(
     () => ActorRepositoryImpl(remoteDataSource: sl()),
   );
+  sl.registerLazySingleton(() => GetActorDetail(sl()));
+  sl.registerFactory(() => ActorDetailCubit(getActorDetailUsecase: sl()));
 
-  sl.registerLazySingleton<ActorRemoteDataSource>(
-    () => ActorRemoteDataSourceImpl(dio: sl<Dio>()),
+  // --- Profile Feature ---
+  sl.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton(() => GetUserProfile(sl()));
+  sl.registerLazySingleton(() => ToggleFollowActor(sl()));
+  sl.registerLazySingleton(() => IsActorFollowed(sl()));
+  sl.registerFactory(() => ProfileCubit(getUserProfileUseCase: sl()));
+  sl.registerFactory(
+    () => FollowCubit(toggleFollowActor: sl(), isActorFollowedUseCase: sl()),
   );
 }

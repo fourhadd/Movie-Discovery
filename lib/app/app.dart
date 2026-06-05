@@ -7,6 +7,7 @@ import 'package:movie_discovery/di/injection.dart' as di;
 import 'package:movie_discovery/features/actor/presentation/cubit/actor_detail_cubit.dart';
 import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart';
 import 'package:movie_discovery/features/media_detail/presentation/cubit/media_detail_cubit.dart';
+import 'package:movie_discovery/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:movie_discovery/features/search/presentation/cubit/search_cubit.dart';
 import 'package:movie_discovery/features/watchlist/presentation/cubit/watchlist_cubit.dart';
 
@@ -27,6 +28,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<ActorDetailCubit>(
           create: (context) => di.sl<ActorDetailCubit>(),
+        ),
+        BlocProvider<ProfileCubit>(
+          create: (context) => di.sl<ProfileCubit>()..loadUserProfile(),
         ),
       ],
       child: MaterialApp.router(

@@ -1,8 +1,10 @@
 // features/search/presentation/pages/search_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_constants.dart';
+import 'package:movie_discovery/features/search/presentation/widgets/category_list.dart';
+import 'package:movie_discovery/features/search/presentation/widgets/movie_grid.dart';
+import 'package:movie_discovery/features/search/presentation/widgets/search_header.dart';
+import 'package:movie_discovery/features/search/presentation/widgets/search_grid_shimmer.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../cubit/search_cubit.dart';
 import '../cubit/search_state.dart';
@@ -16,120 +18,102 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: AppTheme.backgroundDark,
-        elevation: 0,
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: 'Filmləri axtarın...',
-            hintStyle: const TextStyle(color: Colors.white54),
-            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryRed),
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.clear, color: Colors.white54),
-              onPressed: () {
-                _searchController.clear();
-                context.read<SearchCubit>().searchMovies('');
-              },
-            ),
-          ),
-          onChanged: (value) => context.read<SearchCubit>().searchMovies(value),
-        ),
-      ),
-      body: BlocBuilder<SearchCubit, SearchState>(
-        builder: (context, state) {
-          if (state is SearchInitial) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.movie_creation_outlined,
-                    size: 80,
-                    color: Colors.white24,
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    'Axtarmaq istədiyiniz filmin adını yazın',
-                    style: TextStyle(color: AppTheme.textGrey),
-                  ),
-                ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+
+              SearchHeader(
+                controller: _searchController,
+                onChanged: (value) =>
+                    context.read<SearchCubit>().searchMovies(value),
+                onClear: () {
+                  _searchController.clear();
+                  context.read<SearchCubit>().searchMovies('');
+                },
               ),
-            );
-          }
-          if (state is SearchLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryRed),
-            );
-          }
-          if (state is SearchError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: const TextStyle(color: Colors.red),
+              const SizedBox(height: 15),
+
+              BlocBuilder<SearchCubit, SearchState>(
+                buildWhen: (previous, current) {
+                  return current is SearchInitial;
+                },
+                builder: (context, state) {
+                  if (state is SearchInitial && state.categories.isNotEmpty) {
+                    return CategoryList(
+                      categories: state.categories,
+                      selectedCategory: state.selectedCategory,
+                      onCategorySelected: (cat) {
+                        context.read<SearchCubit>().changeCategory(cat);
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            );
-          }
-          if (state is SearchLoaded) {
-            if (state.movies.isEmpty) {
-              return const Center(
-                child: Text(
-                  'Heç bir film tapılmadı 😕',
-                  style: TextStyle(color: AppTheme.textGrey),
+
+              BlocBuilder<SearchCubit, SearchState>(
+                buildWhen: (previous, current) =>
+                    current is SearchInitial || current is SearchLoaded,
+                builder: (context, state) {
+                  if (state is SearchInitial) {
+                    return const Padding(
+                      padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
+                      child: Text(
+                        'Top Results',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+
+              Expanded(
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchLoading) {
+                      return const SearchGridShimmer();
+                    }
+                    if (state is SearchError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+                    if (state is SearchInitial) {
+                      if (state.topResults.isEmpty) {
+                        return const SearchGridShimmer();
+                      }
+                      return MovieGrid(movies: state.topResults);
+                    }
+                    if (state is SearchLoaded) {
+                      if (state.movies.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Heç bir nəticə tapılmadı 😕',
+                            style: TextStyle(color: AppTheme.textGrey),
+                          ),
+                        );
+                      }
+                      return MovieGrid(movies: state.movies);
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
-              );
-            }
-            return GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 2 / 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
               ),
-              itemCount: state.movies.length,
-              itemBuilder: (context, index) {
-                final movie = state.movies[index];
-                return GestureDetector(
-                  onTap: () => context.push('/movie-details/${movie.id}'),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppTheme.cardDark,
-                      image: movie.posterPath.isNotEmpty
-                          ? DecorationImage(
-                              image: NetworkImage(
-                                '${AppConstants.imageBaseUrl}${movie.posterPath}',
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: movie.posterPath.isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                movie.title,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          )
-                        : null,
-                  ),
-                );
-              },
-            );
-          }
-          return const SizedBox();
-        },
+            ],
+          ),
+        ),
       ),
     );
   }

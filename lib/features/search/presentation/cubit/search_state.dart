@@ -1,30 +1,28 @@
 // features/search/presentation/cubit/search_state.dart
-import 'package:equatable/equatable.dart';
-import '../../../home/domain/entities/movie.dart';
+import '../../data/models/search_result_model.dart';
 
-abstract class SearchState extends Equatable {
-  const SearchState();
+abstract class SearchState {}
 
-  @override
-  List<Object?> get props => [];
+class SearchInitial extends SearchState {
+  final List<SearchResultModel> topResults;
+  final List<Map<String, dynamic>> categories;
+  final Map<String, dynamic>? selectedCategory;
+
+  SearchInitial({
+    required this.topResults,
+    required this.categories,
+    this.selectedCategory,
+  });
 }
-
-class SearchInitial extends SearchState {}
 
 class SearchLoading extends SearchState {}
 
 class SearchLoaded extends SearchState {
-  final List<Movie> movies;
-  const SearchLoaded(this.movies);
-
-  @override
-  List<Object?> get props => [movies];
+  final List<SearchResultModel> movies;
+  SearchLoaded(this.movies);
 }
 
 class SearchError extends SearchState {
   final String message;
-  const SearchError(this.message);
-
-  @override
-  List<Object?> get props => [message];
+  SearchError(this.message);
 }
