@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
+import 'package:movie_discovery/core/widgets/error_view.dart';
 import 'package:movie_discovery/features/home/presentation/cubit/home_cubit.dart';
 import 'package:movie_discovery/features/home/presentation/cubit/home_state.dart';
 import 'package:movie_discovery/features/home/presentation/widgets/home_hero_banner.dart';
@@ -54,15 +55,11 @@ class HomePage extends StatelessWidget {
           }
 
           if (state is HomeError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  state.message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
-                ),
-              ),
+            return ErrorView(
+              message: state.message,
+              onRetry: () {
+                context.read<HomeCubit>().fetchHomeData();
+              },
             );
           }
 

@@ -1,6 +1,7 @@
 // features/search/presentation/pages/search_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_discovery/core/widgets/error_view.dart';
 import 'package:movie_discovery/features/search/presentation/widgets/category_list.dart';
 import 'package:movie_discovery/features/search/presentation/widgets/movie_grid.dart';
 import 'package:movie_discovery/features/search/presentation/widgets/search_header.dart';
@@ -25,7 +26,6 @@ class SearchPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-
               SearchHeader(
                 controller: _searchController,
                 onChanged: (value) =>
@@ -36,7 +36,6 @@ class SearchPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 15),
-
               BlocBuilder<SearchCubit, SearchState>(
                 buildWhen: (previous, current) {
                   return current is SearchInitial;
@@ -54,7 +53,6 @@ class SearchPage extends StatelessWidget {
                   return const SizedBox.shrink();
                 },
               ),
-
               BlocBuilder<SearchCubit, SearchState>(
                 buildWhen: (previous, current) =>
                     current is SearchInitial || current is SearchLoaded,
@@ -75,7 +73,6 @@ class SearchPage extends StatelessWidget {
                   return const SizedBox.shrink();
                 },
               ),
-
               Expanded(
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
@@ -83,11 +80,16 @@ class SearchPage extends StatelessWidget {
                       return const SearchGridShimmer();
                     }
                     if (state is SearchError) {
-                      return Center(
-                        child: Text(
-                          state.message,
-                          style: const TextStyle(color: Colors.red),
-                        ),
+                      return ErrorView(
+                        message: state.message,
+                        onRetry: () {
+                          final query = _searchController.text.trim();
+                          if (query.isNotEmpty) {
+                            context.read<SearchCubit>().searchMovies(query);
+                          } else {
+                            context.read<SearchCubit>().initSearchPage();
+                          }
+                        },
                       );
                     }
                     if (state is SearchInitial) {

@@ -1,5 +1,6 @@
 // features/home/presentation/cubit/home_cubit.dart
-import 'package:bloc/bloc.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/get_popular_movies.dart';
 import '../../domain/usecases/get_trending_movies.dart';
@@ -22,7 +23,11 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(HomeLoaded(trendingMovies: results[0], popularMovies: results[1]));
     } catch (e) {
-      emit(HomeError(e.toString()));
+      emit(
+        const HomeError(
+          "Filmlər yüklənərkən xəta oldu. Zəhmət olmasa yenidən cəhd edin.",
+        ),
+      );
     }
   }
 
