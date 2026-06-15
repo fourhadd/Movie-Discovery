@@ -28,7 +28,7 @@ Tətbiqin sürətli, təhlükəsiz və genişləndirilə bilən qalması üçün
 ## 🌟 Əsas Özəlliklər (Key Features)
 
 1. 🏠 **Home Screen:** Ən son, populyar və trend olan filmləri vizual olaraq zəngin karusellərlə təqdim edir. Əsas banner hissəsində axıcı **Hero animasiyası** tətbiq olunmuşdur.
-2. 🔍 **Advanced Search:** Filmləri və aktyorları ad, janr və digər kriteriyalara göre eyni ekranda real vaxt rejimində (Multi-Search) axtarır. Şəffaf və parıltısız kateqoriya çipləri ilə filtrasiya mövcuddur.
+2. 🔍 **Advanced Search:** Filmləri və aktyorları ad, janr və digər kriteriyalara görə eyni ekranda real vaxt rejimində (Multi-Search) axtarır. Şəffaf və parıltısız kateqoriya çipləri ilə filtrasiya mövcuddur.
 3. 🎥 **Media Details:** Hər bir film üçün sinopsis, reytinq xalları, izləmə müddəti, oxşar film tövsiyələri və daxili YouTube trailer pleyeri ilə tam ətraflı məlumat səhifəsi.
 4. 👥 **Cast Information:** Filmdə iştirak edən aktyorların siyahısı və rolu haqqında məlumatlar. Aktyorun üzərinə kliklədikdə dərhal şəxsi profilinə keçid imkanı.
 5. ⭐ **Actor Profiles:** Aktyorun bioqrafiyası, populyarlıq reytinqi, çəkildiyi digər tanınmış filmlər və foto qalereyası vərəqi ilə zənginləşdirilmiş profil modulu.
@@ -46,191 +46,200 @@ Layihənin `lib/` qovluğu daxilindəki təmiz və explicit fayl iyerarxiyası:
 ```text
 lib/
 │
-├── app/                               # Tətbiqin əsas konfiqurasiyası
-│   └── app.dart                       # MaterialApp sazlamaları və giriş nöqtəsi
+├── main.dart                           # Tətbiqin giriş nöqtəsi – runApp() ilə App sinifini başlatma
 │
-├── core/                              # Paylaşılan ümumi komponentlər və utilitlər
+├── app/
+│   └── app.dart                        # Tətbiqin konfiqurasiyası (MaterialApp, tema, router)
+│
+├── core/                                # Paylaşılan ümumi komponentlər və utilitlər
 │   ├── constants/
-│   │   └── app_constants.dart         # API URL-ləri, açarlar və statik dəyərlər
+│   │   └── app_constants.dart          # API base URL, TMDB API açarı və digər sabitlər
 │   ├── errors/
-│   │   └── failures.dart              # Xəta idarəetməsi üçün xüsusi Failure sinifləri
+│   │   └── failures.dart               # Xəta idarəetməsi – exception-ların modelləşdirilməsi
 │   ├── navigation/
-│   │   ├── app_router.dart            # GoRouter konfiqurasiyası və marşrutlar
-│   │   └── main_wrapper.dart          # Bottom Navigation Bar idarəetməsi
+│   │   ├── app_router.dart             # GoRouter konfiqurasiyası – bütün marşrutların təyini
+│   │   └── main_wrapper.dart           # Aşağı naviqasiya bar-ı və əsas struktur
 │   ├── theme/
-│   │   └── app_theme.dart             # Dark Theme rəngləri və qlobal stillər
+│   │   └── app_theme.dart              # Material Design 3 tema – rənglər, tipoqrafiya, komponent üslubları
 │   ├── usecases/
-│   │   └── usecase.dart               # Bütün UseCase-lər üçün abstrakt baza sinfi
+│   │   └── usecase.dart                # UseCase baza sinfi – bütün use case-lər üçün abstract
 │   └── widgets/
-│       └── app_shimmer.dart           # Təkrar istifadə edilə bilən əsas shimmer vidceti
+│       ├── app_shimmer.dart            # Shimmer yüklənmə effekti – universal komponent
+│       └── error_view.dart             # Xəta göstərmə vidceti – API xətalarını ekranda əks etdirmə
 │
-├── di/                                # Dependency Injection (Asılılıqların yeridilməsi)
-│   └── injection.dart                 # GetIt xidmət lokatorunun qeydiyyat faylı
+├── di/
+│   └── injection.dart                  # GetIt Dependency Injection konfiqurasiyası – bütün servislərin qeydiyyatı
 │
-└── features/                          # Clean Architecture-ə uyğun müstəqil funksional modullar
+└── features/                           # Clean Architecture-ə uyğun müstəqil funksional modullar
     │
-    ├── home/                          # Ana Səhifə Modulu
+    ├── home/                           # Ana Səhifə Modulu
     │   ├── data/
     │   │   ├── datasources/
-    │   │   │   └── home_remote_data_source.dart    # API-yə qoşulan uzaq data mənbəyi
+    │   │   │   └── home_remote_data_source.dart    # API-dən trend və populyar filmləri çəkmə
     │   │   ├── models/
-    │   │   │   └── movie_model.dart                # Film məlumat modeli (JSON mapping)
+    │   │   │   └── movie_model.dart                # API cavabını Dart obyektinə serialləşdirmə
     │   │   └── repositories/
-    │   │       └── movie_repository_impl.dart      # Repozitoriyanın data tərəfində tətbiqi
+    │   │       └── movie_repository_impl.dart      # Data Layer ilə Domain Layer arasında körpü
     │   ├── domain/
     │   │   ├── entities/
-    │   │   │   └── movie.dart                      # Xalis biznes obyekti (Entity)
+    │   │   │   └── movie.dart                       # Business logic-də istifadə olunan xalis Film modeli
     │   │   ├── repositories/
-    │   │   │   └── movie_repository.dart           # Abstrakt repozitoriya müqaviləsi
+    │   │   │   └── movie_repository.dart            # Abstrakt film deposu üçün müqavilə (interface)
     │   │   └── usecases/
-    │   │       ├── get_trending_movies.dart        # Trend filmləri gətirən use case
-    │   │       └── get_popular_movies.dart         # Populyar filmləri gətirən use case
+    │   │       ├── get_trending_movies.dart         # Trend filmləri əldə etmə use case
+    │   │       └── get_popular_movies.dart          # Populyar filmləri əldə etmə use case
     │   └── presentation/
     │       ├── cubit/
-    │       │   ├── home_cubit.dart                 # Ana səhifə üçün BLoC/Cubit məntiqi
-    │       │   └── home_state.dart                 # Səhifənin vəziyyətləri (States)
+    │       │   ├── home_cubit.dart                  # Home səhifəsi state management – film verisi yükləmə
+    │       │   └── home_state.dart                  # State klassları (Initial, Loading, Loaded, Error)
     │       ├── pages/
-    │       │   └── home_page.dart                  # Ana səhifə interfeysi
+    │       │   └── home_page.dart                   # Əsas səhifə UI – HomeCubit ilə bağlantı
     │       └── widgets/
-    │           ├── home_hero_banner.dart           # Sürüşən hero banner komponenti
-    │           ├── banner_action_buttons.dart      # Banner üzərindəki düymələr
-    │           ├── home_movie_section.dart         # Horizontal film bölməsi şablonu
-    │           ├── movie_card.dart                 # Fərdi film kartı
-    │           └── home_shimmer.dart               # Ana səhifə üçün yüklənmə skleti
+    │           ├── home_hero_banner.dart            # Böyük banner vidceti – seçilmiş film göstəricisi
+    │           ├── banner_action_buttons.dart       # Banner üzərindəki düymələr (Trailer, Details)
+    │           ├── home_movie_section.dart          # Film kateqoriyası bölməsi (Trending, Popular)
+    │           ├── movie_card.dart                  # Tək bir film kartı – şəkil, ad, reytinq
+    │           └── home_shimmer.dart                # Home səhifəsi üçün yüklənmə shimmer təsviri
     │
-    ├── search/                        # Axtarış Modulu (Həm Filmlər, Həm Aktyorlar)
+    ├── search/                         # Axtarış Modulu (Həm Filmlər, Həm Aktyorlar)
     │   ├── data/
     │   │   ├── datasources/
-    │   │   │   └── search_remote_data_source.dart  # Multi-search API sorğuları
+    │   │   │   └── search_remote_data_source.dart  # API-dən axtarış nəticələri və janrları çəkmə
     │   │   ├── models/
-    │   │   │   └── search_result_model.dart        # Dinamik media-tipli nəticə modeli
+    │   │   │   └── search_result_model.dart         # Axtarış nəticəsi modeli (janr, film məlumatı)
     │   │   └── repositories/
-    │   │       └── search_repository_impl.dart     # Axtarış repozitoriya tətbiqi
+    │   │       └── search_repository_impl.dart      # Axtarış deposunun tətbiqi
     │   ├── domain/
     │   │   ├── repositories/
-    │   │   │   └── search_repository.dart          # Abstrakt axtarış repozitoriyası
+    │   │   │   └── search_repository.dart           # Abstrakt axtarış deposu
     │   │   └── usecases/
-    │   │       ├── search_movies.dart              # Multi-search sorğu istifadə ssenarisi
-    │   │       └── get_genres.dart                 # Janrları çəkən use case
+    │   │       ├── search_movies.dart                # Film axtarışı use case
+    │   │       └── get_genres.dart                   # Janr siyahısını əldə etmə use case
     │   └── presentation/
     │       ├── cubit/
-    │       │   ├── search_cubit.dart               # Debounce mexanizmli axtarış Cubit-i
-    │       │   └── search_state.dart               # Axtarış vəziyyətlərinin təyini
+    │       │   ├── search_cubit.dart                 # Axtarış səhifəsi state management
+    │       │   └── search_state.dart                 # Axtarış üçün state klassları
     │       ├── pages/
-    │       │   └── search_page.dart                # Dinamik başlıqlı axtarış səhifəsi
+    │       │   └── search_page.dart                  # Axtarış səhifəsi UI
     │       └── widgets/
-    │           ├── search_header.dart              # Giriş sahəsi (TextField) komponenti
-    │           ├── category_list.dart              # Parıltısız ChoiceChip janr siyahısı
-    │           ├── movie_grid.dart                 # Qarışıq film/aktyor qrid siyahısı
-    │           └── search_grid_shimmer.dart        # Dairəvi və düzbucaqlı qarışıq sklet
+    │           ├── search_header.dart                # Axtarış input sahəsi
+    │           ├── category_list.dart                # Janr filtri (horizontal scroll)
+    │           ├── movie_grid.dart                    # Axtarış nəticələri grid şəklində
+    │           └── search_grid_shimmer.dart           # Axtarış nəticələri üçün yüklənmə animasiyası
     │
-    ├── media_detail/                  # Film Detalları Modulu
+    ├── media_detail/                   # Film Detalları Modulu
     │   ├── data/
     │   │   ├── datasources/
-    │   │   │   └── media_detail_remote_data_source.dart  # Detal API sorğuları
+    │   │   │   └── media_detail_remote_data_source.dart  # API-dən media ətraflı məlumatı, kast və treyleri çəkmə
     │   │   ├── models/
-    │   │   │   ├── movie_detail_model.dart         # Film detalları modeli
-    │   │   │   └── cast_model.dart                 # Aktyor heyəti modeli
+    │   │   │   ├── movie_detail_model.dart           # Film ətraflı məlumat modeli
+    │   │   │   └── cast_model.dart                    # Aktyor heyəti (cast) modeli
     │   │   └── repositories/
-    │   │       └── media_detail_repository_impl.dart     # Detal repo impl
+    │   │       └── media_detail_repository_impl.dart # Media ətraflı məlumat deposunun tətbiqi
     │   ├── domain/
     │   │   ├── entities/
-    │   │   │   ├── movie_detail.dart               # Detal biznes entitysi
-    │   │   │   └── cast.dart                       # Aktyor heyəti entitysi
+    │   │   │   ├── movie_detail.dart                  # Film ətraflı məlumat entity
+    │   │   │   └── cast.dart                          # Aktyor entity
     │   │   ├── repositories/
-    │   │   │   └── media_detail_repository.dart    # Abstrakt detal repozitoriyası
+    │   │   │   └── media_detail_repository.dart      # Abstrakt media ətraflı məlumat deposu
     │   │   └── usecases/
-    │   │       ├── get_movie_details.dart          # Detalları gətirmə use case-i
-    │   │       ├── get_movie_cast.dart             # Kast siyahısını gətirmə use case-i
-    │   │       ├── get_movie_trailer.dart          # Trailer linkini çəkən use case
-    │   │       └── get_similar_movies.dart         # Oxşar filmlər use case-i
+    │   │       ├── get_movie_details.dart            # Film ətraflı məlumatını əldə etmə use case
+    │   │       ├── get_movie_cast.dart                # Film kastını əldə etmə use case
+    │   │       ├── get_movie_trailer.dart             # Film treyler URL-ini əldə etmə use case
+    │   │       └── get_similar_movies.dart           # Oxşar filmləri əldə etmə use case
     │   └── presentation/
     │       ├── cubit/
-    │       │   ├── media_detail_cubit.dart         # Detal səhifəsi Cubit-i
-    │       │   └── media_detail_state.dart         # Detal dövlət vəziyyətləri
+    │       │   ├── media_detail_cubit.dart           # Media ətraflı məlumat səhifəsi state management
+    │       │   └── media_detail_state.dart           # Media detail state klassları
     │       ├── pages/
-    │       │   └── media_detail_page.dart          # Detal ekranı əsas UI
+    │       │   └── movie_detail_page.dart            # Film ətraflı məlumat səhifəsi UI
     │       └── widgets/
-    │           ├── detail_header.dart              # Arxa fon və reytinqli başlıq
-    │           ├── cast_section.dart               # Aktyorların horizontal siyahısı
-    │           ├── similar_movies_section.dart     # Tövsiyə olunan filmlər qovluğu
-    │           ├── trailer_player.dart             # YouTube iframe pleyer vidceti
-    │           └── detail_shimmer.dart             # Detal səhifəsi üçün yüklənmə paneli
+    │           ├── detail_header.dart                 # Film banneri – şəkil, ad, reytinq
+    │           ├── detail_overview.dart               # Film haqqında izah (məzmun, rejissor, tarix)
+    │           ├── detail_cast_list.dart              # Aktyorlar siyahısı (horizontal)
+    │           ├── detail_similar_movies.dart         # Oxşar filmlər siyahısı
+    │           ├── trailer_video_player.dart          # YouTube pleyer vidceti
+    │           ├── watchlist_button.dart              # İzləmə siyahısına əlavə etmə düyməsi
+    │           └── movie_detail_shimmer.dart          # Media detail səhifəsi üçün yüklənmə animasiyası
     │
-    ├── actor/                         # Aktyor Profil Modulu
+    ├── actor/                          # Aktyor Profil Modulu
     │   ├── data/
     │   │   ├── datasources/
-    │   │   │   └── actor_remote_data_source.dart   # Aktyor məlumatları üçün API mənbəyi
+    │   │   │   └── actor_remote_datasource.dart      # API-dən aktyor ətraflı məlumatını çəkmə
     │   │   ├── models/
-    │   │   │   └── actor_model.dart                # Aktyor profil məlumat modeli
+    │   │   │   └── actor_model.dart                   # Aktyor API modeli
     │   │   └── repositories/
-    │   │       └── actor_repository_impl.dart      # Aktyor repozitoriya tətbiqi
+    │   │       └── actor_remote_datasource_impl.dart  # Aktyor deposunun tətbiqi
     │   ├── domain/
     │   │   ├── entities/
-    │   │   │   └── actor.dart                      # Aktyor profil entitysi
+    │   │   │   └── actor_entity.dart                  # Aktyor business logic entity
     │   │   ├── repositories/
-    │   │   │   └── actor_repository.dart           # Abstrakt aktyor repozitoriyası
+    │   │   │   └── actor_repository.dart              # Abstrakt aktyor deposu
     │   │   └── usecases/
-    │   │       └── get_actor_details.dart          # Profil detallarını gətirən use case
+    │   │       └── get_actor_detail.dart              # Aktyor ətraflı məlumatını əldə etmə use case
     │   └── presentation/
     │       ├── cubit/
-    │       │   ├── actor_cubit.dart                # Aktyor məlumatları üçün Cubit
-    │       │   └── actor_state.dart                # Aktyor dövlət vəziyyətləri
+    │       │   ├── actor_detail_cubit.dart            # Aktyor ətraflı məlumat səhifəsi state management
+    │       │   └── actor_detail_state.dart            # Aktyor detail state klassları
     │       ├── pages/
-    │       │   └── actor_page.dart                 # Aktyor profil səhifəsi UI
+    │       │   └── actor_detail_page.dart             # Aktyor ətraflı məlumat səhifəsi UI
     │       └── widgets/
-    │           ├── actor_header.dart               # Bioqrafiya və foto komponenti
-    │           ├── actor_filmography.dart          # Aktyorun tanınmış filmlər siyahısı
-    │           └── actor_shimmer.dart              # Profil üçün yüklənmə skleti
+    │           ├── actor_header.dart                  # Aktyor profil başlığı (foto, ad)
+    │           ├── actor_biography.dart               # Aktyorun bioqrafiyası
+    │           ├── actor_stats.dart                   # Aktyor statistikaları (doğum tarixi, məşhurluq)
+    │           ├── actor_known_for.dart               # Aktyorun məşhur olduğu rollar
+    │           ├── actor_photos.dart                  # Aktyorun fotoları (grid)
+    │           ├── follow_button.dart                 # İzləmə/Follow düyməsi
+    │           └── actor_detail_shimmer.dart          # Aktyor səhifəsi üçün yüklənmə animasiyası
     │
-    ├── watchlist/                     # Watchlist (Lokal Yaddaş) Modulu
+    ├── watchlist/                      # Watchlist (Lokal Yaddaş) Modulu
     │   ├── data/
     │   │   ├── datasources/
-    │   │   │   └── watchlist_local_data_source.dart     # GetStorage ilə lokal baza idarəsi
+    │   │   │   └── watchlist_local_data_source.dart  # Lokal cihaz yaddaşında (GetStorage) izləmə siyahısını saxlama
     │   │   └── repositories/
-    │   │       └── watchlist_repository_impl.dart       # Watchlist repozitoriya tətbiqi
+    │   │       └── watchlist_repository_impl.dart    # İzləmə siyahısı deposunun tətbiqi
     │   ├── domain/
     │   │   ├── repositories/
-    │   │   │   └── watchlist_repository.dart      # Abstrakt yaddaş repozitoriyası
+    │   │   │   └── watchlist_repository.dart         # Abstrakt izləmə siyahısı deposu
     │   │   └── usecases/
-    │   │       ├── add_to_watchlist.dart          # Film əlavə etmə ssenarisi
-    │   │       ├── remove_from_watchlist.dart     # Filmi silmə ssenarisi
-    │   │       └── get_watchlist.dart             # Siyahını çəkmə ssenarisi
+    │   │       └── watchlist_usecases.dart           # Bütün izləmə siyahısı use case-ləri (Add, Remove, Get List)
     │   └── presentation/
     │       ├── cubit/
-    │       │   ├── watchlist_cubit.dart           # Watchlist məlumat axını Cubit-i
-    │       │   └── watchlist_state.dart           # Watchlist dövlət vəziyyətləri
+    │       │   ├── watchlist_cubit.dart              # İzləmə siyahısı səhifəsi state management
+    │       │   └── watchlist_state.dart              # İzləmə siyahısı state klassları
     │       ├── pages/
-    │       │   └── watchlist_page.dart            # Şəxsi yaddaş siyahısı ekranı
+    │       │   └── watchlist_page.dart               # İzləmə siyahısı səhifəsi UI
     │       └── widgets/
-    │           ├── watchlist_item.dart            # Siyahıdakı fərdi film kartı
-    │           ├── empty_watchlist.dart           # Siyahı boş olduqda çıxan xüsusi UI
-    │           └── watchlist_shimmer.dart         # 3 sütunlu xüsusi watchlist skleti
+    │           └── watchlist_grid_shimmer.dart       # İzləmə siyahısı üçün yüklənmə animasiyası
     │
-    └── profile/                       # İstifadəçi Profil Modulu
+    └── profile/                        # İstifadəçi Profil Modulu
         ├── data/
         │   ├── datasources/
-        │   │   └── profile_local_data_source.dart      # Lokal istifadəçi məlumat bazası
+        │   │   └── profile_local_data_source.dart   # Lokal cihaz yaddaşında fərdi profil məlumatı
         │   ├── models/
-        │   │   └── user_model.dart                     # İstifadəçi data modeli
+        │   │   └── followed_actor_model.dart        # İzlənən aktyor modeli
         │   └── repositories/
-        │       └── profile_repository_impl.dart        # Profil repozitoriya tətbiqi
+        │       └── profile_repository_impl.dart     # Profil deposunun tətbiqi
         ├── domain/
         │   ├── entities/
-        │   │   └── user.dart                           # İstifadəçi biznes entitysi
+        │   │   ├── user_profile.dart                 # İstifadəçi profili entity
+        │   │   └── followed_actor.dart               # İzlənən aktyor entity
         │   ├── repositories/
-        │   │   └── profile_repository.dart             # Abstrakt profil repozitoriyası
+        │   │   └── profile_repository.dart           # Abstrakt profil deposu
         │   └── usecases/
-        │       ├── get_user_profile.dart               # Profili oxuyan use case
-        │       └── update_user_profile.dart            # Profili yeniləyən use case
+        │       ├── get_user_profile.dart             # İstifadəçi profil məlumatını əldə etmə use case
+        │       ├── toggle_follow_actor.dart          # Aktyoru izləmə/izləməni dayandırma use case
+        │       └── is_actor_followed.dart            # Aktyorun izlənib-izlənmədiyini yoxlama use case
         └── presentation/
             ├── cubit/
-            │   ├── profile_cubit.dart                  # Profil məlumatları üçün Cubit
-            │   └── profile_state.dart                  # Profil dövlət vəziyyətləri
+            │   ├── profile_cubit.dart                # Profil səhifəsi state management
+            │   ├── profile_state.dart                # Profil state klassları
+            │   └── follow_cubit.dart                 # Aktyoru izləmə state management
             ├── pages/
-            │   └── profile_page.dart                   # Profil ekranı UI
+            │   └── profile_page.dart                 # Fərdi profil səhifəsi UI
             └── widgets/
-                ├── profile_header.dart                 # İstifadəçi şəkli və adı
-                ├── profile_stats.dart                  # İstifadəçi statistikaları
-                └── profile_settings.dart               # Tənzimləmələr menyusu
-└── main.dart
+                ├── profile_header.dart                # Profil üst hissəsi (istifadəçi məlumatı)
+                ├── followed_actors_section.dart       # İzlənən aktyorlar siyahısı
+                ├── follow_button.dart                 # Follow/Unfollow düyməsi
+                └── profile_shimmer.dart               # Profil səhifəsi üçün yüklənmə animasiyası
+```
