@@ -71,7 +71,6 @@ class MediaDetailRemoteDataSourceImpl implements MediaDetailRemoteDataSource {
     if (response.statusCode == 200) {
       final List results = response.data['results'];
 
-      // YouTube-da rəsmi Trailer olan videonu tapırıq
       final trailerVideo = results.firstWhere(
         (video) => video['site'] == 'YouTube' && video['type'] == 'Trailer',
         orElse: () => results.firstWhere(

@@ -88,9 +88,7 @@ Future<void> init() async {
     () => SearchRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton(() => SearchMovies(sl()));
-  sl.registerLazySingleton(
-    () => GetGenres(sl()),
-  ); // GetGenres öz aid olduğu blokda yerləşdirildi
+  sl.registerLazySingleton(() => GetGenres(sl()));
 
   sl.registerFactory(
     () => SearchCubit(searchMoviesUseCase: sl(), getGenresUseCase: sl()),

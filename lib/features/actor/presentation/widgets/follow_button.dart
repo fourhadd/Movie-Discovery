@@ -2,13 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery/core/theme/app_theme.dart';
-import 'package:movie_discovery/di/injection.dart'; // Sizin DI konteyner importunuz
+import 'package:movie_discovery/di/injection.dart';
 import 'package:movie_discovery/features/profile/presentation/cubit/follow_cubit.dart';
 import '../../../profile/domain/entities/followed_actor.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
 
 class FollowButton extends StatelessWidget {
-  // Aktyor məlumatlarını kənardan (məsələn, ActorDetailPage-dən) qəbul edirik
   final FollowedActor actor;
 
   const FollowButton({super.key, required this.actor});
@@ -16,16 +15,12 @@ class FollowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // Səhifə açılanda aktyorun əvvəlcədən təqib edilib-edilmədiyini yoxlayırıq
       create: (context) => sl<FollowCubit>()..checkFollowStatus(actor.id),
       child: BlocBuilder<FollowCubit, bool>(
         builder: (context, isFollowing) {
           return ElevatedButton.icon(
             onPressed: () {
-              // 1. Aktyoru təqib siyahısına əlavə et və ya çıxart
               context.read<FollowCubit>().toggleFollow(actor);
-
-              // 2. Profil səhifəsindəki siyahının anında yenilənməsi üçün ProfileCubit-i tetikle
               context.read<ProfileCubit>().loadUserProfile();
             },
             style: ElevatedButton.styleFrom(
